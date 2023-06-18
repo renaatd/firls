@@ -1,6 +1,6 @@
 # firls
 
-Browser tool to calculated FIR filters using least squares method. The actual calculation is done by the C++ library (fir-cpp)[https://github.com/renaatd/fir-cpp]. A precompiled version is included in this repo (src/assets/fir.js).
+Browser tool to calculated FIR filters using least squares method. The actual calculation is done by the C++ library [fir-cpp](https://github.com/renaatd/fir-cpp). A precompiled version is included in this repo (src/assets/fir.js).
 
 ## Project Setup
 
