@@ -216,7 +216,8 @@ class State {
     private getEmscriptenArrayDoubles(dataPtr: number, length: number): Float64Array {
         if (this.instance == null) return new Float64Array();
 
-        return new Float64Array(this.instance.HEAPU8.buffer, dataPtr, length);
+        // The inner Float64Array is a view on the heap. Copy this to a separate Float64array, not referencing the heap.
+        return new Float64Array(new Float64Array(this.instance.HEAPU8.buffer, dataPtr, length));
     }
 }
 
