@@ -27,7 +27,7 @@
         Nyquist frequency.
         Max error and Min error are respectively the maximum and minimum value of the error Em = Hm - |Dm|, with Hm = actual
         magnitude and Dm = desired magnitude.
-        The error integral is 1/&Delta;f x &int;Em<sup>2</sup>df. The weighted error integral is the error integral multiplied with the
+        The error integral is 1/f<sub>Nyquist</sub> x &int;Em<sup>2</sup>df. The weighted error integral is the error integral multiplied with the
         weight.</ClickHelp></p>
 </template>
 
