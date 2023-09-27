@@ -90,7 +90,7 @@ watch(filter_type, () => {
 });
 
 /* ======================================================== */
-const frequencyBandsText = ref('0, 100, 400, 500');
+const frequencyBandsText = ref('0, 200, 400, 500');
 const frequencyBandsOk = computed(() => {
   const len = splitStringToNumbers(frequencyBandsText.value).length;
   return (len > 0) && (len % 2 == 0);
@@ -100,7 +100,7 @@ watch(frequencyBandsText, () => {
   updateCalculatedFlag(false);
 });
 
-const amplitudesText = ref('1, 1, 0, 0');
+const amplitudesText = ref('2, 2, 0, 0');
 // In the form: using :class="is-success: <a computed property>" doesn't work, but a computed property returning an object works
 const amplitudesOk = computed(() => { return splitStringToNumbers(amplitudesText.value).length > 0; });
 const amplitudesClass = computed(() => { return { 'is-success': amplitudesOk }; });
@@ -115,7 +115,7 @@ watch(weightsText, () => {
   updateCalculatedFlag(false);
 });
 
-const tapsText = ref('31');
+const tapsText = ref('15');
 const tapsOk = ref(false);
 // Just for variation: here using a watcher to update the class -> must be immediate to trigger immediately at start
 watch(tapsText, () => {

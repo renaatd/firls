@@ -1,6 +1,10 @@
 # firls
 
-Browser tool to calculated FIR filters using least squares method. The actual calculation is done by the C++ library [fir-cpp](https://github.com/renaatd/fir-cpp). A precompiled version is included in this repo (src/assets/fir.js).
+Browser application to design symmetric FIR filters using the least squares method.
+
+This repository contains the Vue.js TypeScript code. The calculation is done by
+the C++ library [fir-cpp](https://github.com/renaatd/fir-cpp). A
+precompiled version is included in this repo (src/assets/fir.js).
 
 ## Project Setup
 
