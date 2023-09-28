@@ -29,13 +29,13 @@
     <input id="taps" type="number" inputmode="numeric" :value="tapsText"
         @input="onInputTaps($event)" :class="{ 'is-success': tapsOk }">
 
-    <label for="frequencies">List of frequency bands [Hz]: <ClickHelp class="help">List of frequency pairs specifying the edges of each frequency band. This must be a monotonically increasing list. The frequenices must be less than the Nyquist frequency (half the sample frequency).</ClickHelp></label>
+    <label for="frequencies">List of frequency bands [Hz]: <ClickHelp class="help">List of frequency pairs specifying the edges of each frequency band. This list must be monotonically increasing, and the frequencies must be lower than the Nyquist frequency (half the sample frequency).</ClickHelp></label>
     <input id="frequencies" type="text" inputmode="text" v-model="frequencyBandsText" :class="frequencyBandsClass"/>
 
     <label for="amplitudes">List of amplitudes: <ClickHelp class="help">List of amplitude pairs, specifying the desired amplitude at the edges of each frequency band.</ClickHelp></label>
     <input id="amplitudes" type="text" inputmode="text" v-model="amplitudesText" :class="amplitudesClass"/>
 
-    <label for="weights">List of weights: <ClickHelp class="help">Relative weighting factors, one per frequency band. A heigher weighting factor for a band leads to lower errors in that band.</ClickHelp></label>
+    <label for="weights">List of weights: <ClickHelp class="help">Relative weighting factors, one per frequency band. A higher weighting factor reduces errors in that band.</ClickHelp></label>
     <input id="weights" type="text" inputmode="text" v-model="weightsText" :class="weightsClass"/>
 
     <input type="submit" value="Calculate" :disabled="!allInputsOk" :class="submitClass"/>
