@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="main.min.css">
+    <title>FIR LS - about</title>
+  </head>
+  <body>
+  <div class="medium-container">
+    <nav class="margin-top margin-bottom" style="font-size: 1.25rem">
+      | <a href="index.html">FIR LS</a> | <a href="about.html">About</a> |
+    </nav>
+
+    <h1>FIR LS</h1>
+    <p>FIR LS is a free tool to design symmetric FIR filters using the least squares method. It designs type I and type II symmetrical FIR filters.</p>
+    <p>The implementation is based on SciPy signal.firls. The algorithm has been translated to C++, extended for type II FIR filters, and compiled to WebAssembly using Emscripten.</p>
+
+    <h1>Similar tools</h1>
+    <ul>
+        <li><a href="http://t-filter.engineerjs.com/">T-filter engineer, FIR filter design using equiripple (Parks–McClellan) method</a></li>
+        <li><a href="https://fiiir.com/">FIIR!, FIR filter design using window method, and moving average FIR filters</a></li>
+    </ul>
+
+    <h1>Source code</h1>
+    <ul>
+        <li><a href="https://github.com/renaatd/firls">Web application (Vue.js)</a></li>
+        <li><a href="https://github.com/renaatd/fir-cpp">C++ library for FIR LS and frequency response calculations</a></li>
+    </ul>
+
+    <h1>Contact</h1>
+    <p>If you have a bug to report or feature to request, please use github issues. For other requests, you can contact the author at renaatd@fastmail.com</p>
+
+    <h1>Links</h1>
+    <dl>
+      <dt><a href = "https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.firls.html">SciPy firls</a></dt>
+      <dd>Python implementation for type I FIR filters, used as basis for this implementation.</dd>
+      <dt><a href = "https://savannah.gnu.org/bugs/?func=detailitem&item_id=51310">unofficial Octave firls by Ionescu Vlad</a></dt>
+      <dd>Octave implementation for type I-IV FIR filters, used for validation. Not (yet) part of Octave, but it probably should be.</dd>
+    </dl>
+
+  </div>
+  </body>
+</html>
