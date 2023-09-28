@@ -51,7 +51,7 @@ function rippleText(index: number) {
 
 function attenuationText(index: number) {
     if (filterSpec.typePerBand[index] == FilterBandType.StopBand) {
-        let attenuationDb = 20 * Math.log10(filterSpec.errorPerBand[index].maxError);
+        let attenuationDb = -20 * Math.log10(filterSpec.errorPerBand[index].maxError);
         return attenuationDb.toFixed(1);
     }
     return "";

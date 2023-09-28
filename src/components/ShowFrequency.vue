@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { Chart, LinearScale, LineElement, PointElement, LineController, Title } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import type { ChartConfiguration } from 'chart.js';
 
 import { filterSpec } from '@/models/FilterSpec';
@@ -64,6 +65,22 @@ function createChartIfNeeded(): void {
                     display: true,
                     text: 'Frequency response',
                 },
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                        },
+                        pinch: {
+                            enabled: true,
+                        },
+                        mode: 'xy',
+                        scaleMode: 'xy',
+                    },
+                    limits: {
+                        x: {min: 'original', max: 'original'},
+                        y: {min: 'original', max: 'original'},
+                    },
+                }
             },
             scales: {
                 x: {
@@ -110,7 +127,7 @@ watch(filterSpec, () => {
 
 onMounted(() => {
     // addLog("ShowFrequency: onMounted");
-    Chart.register(LineController, LinearScale, PointElement, LineElement, Title);
+    Chart.register(LineController, LinearScale, PointElement, LineElement, Title, zoomPlugin);
     updateChart();
 });
 
