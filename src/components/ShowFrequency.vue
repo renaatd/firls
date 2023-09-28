@@ -1,4 +1,8 @@
 <template>
+    <div>Vertical scale:</div>
+    <label for="linear"><input type="radio" id="linear" value="linear" v-model="scaleType"/> Linear</label>
+    <label for="logarithmic"><input type="radio" id="logarithmic" value="logarithmic" v-model="scaleType"/> Logarithmic (dB)</label>
+
     <canvas ref="chartRef" width="700" height="450"></canvas>
 </template>
 
@@ -10,6 +14,8 @@ import type { ChartConfiguration } from 'chart.js';
 
 import { filterSpec } from '@/models/FilterSpec';
 import { addLog } from '@/helpers/Logger';
+
+const scaleType = ref('linear');
 
 /** chart.js Chart object, defined at first update */
 let chart: Chart | null = null;
@@ -113,12 +119,18 @@ function updateChart(): void {
     }
 
     let amplitudes = filterSpec.hm;
+    if (scaleType.value == 'logarithmic') {
+        amplitudes = amplitudes.map(x => { return (x <= 0) ? -7000 : 20 * Math.log10(x); });
+    }
     let frequencies = filterSpec.fr;
     let dataset = amplitudes.map((a, index) => { return { x: frequencies[index], y: a }; });
     chart.data.datasets[0].data = dataset;
 
     chart.update();
+    chart.resetZoom();
 }
+
+watch(scaleType, () => { updateChart(); });
 
 watch(filterSpec, () => {
     // addLog("ShowFrequency: watch(FilterSpec)");
