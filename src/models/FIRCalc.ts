@@ -80,10 +80,9 @@ class State {
     updateFilter(numTaps: number, frequencyBands: number[], desiredBegin: number[], desiredEnd: number[], weights: number[], sampleFrequency: number): [boolean, string | number[]] {
         filterSpec.sampleFrequency = sampleFrequency;
 
-        let s = new Stopwatch();
+        const s = new Stopwatch();
         const [success, result] = this.firls(numTaps, frequencyBands, desiredBegin, desiredEnd, weights, sampleFrequency);
-        let elapsedMs = s.elapsedMs();
-        addLog(`firls calculation took ${elapsedMs} ms`);
+        const elapsedFirlsMs = s.elapsedMs();
 
         if (success) {
             filterSpec.sampleFrequency = sampleFrequency;
@@ -99,11 +98,7 @@ class State {
             }
             filterSpec.taps = result as number[];
 
-            s = new Stopwatch();
             const [fr, hm] = this.freqz(NO_POINTS, filterSpec.taps, filterSpec.sampleFrequency);
-            elapsedMs = s.elapsedMs();
-            addLog(`frequency response calculation took ${elapsedMs} ms`);
-
             filterSpec.fr = Array.from(fr);
             filterSpec.hm = Array.from(hm);
         } else {
@@ -114,6 +109,8 @@ class State {
             filterSpec.hm = [];
         }
         filterSpec.updateError();
+        const elapsedTotalMs = s.elapsedMs();
+        addLog(`Calculation time: firls ${elapsedFirlsMs} ms, total ${elapsedTotalMs} ms`);
 
         return [success, result];
     }
