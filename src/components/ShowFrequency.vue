@@ -131,7 +131,9 @@ function updateChart(): void {
     let frequencies = filterSpec.fr;
     let dataset = amplitudes.map((a, index) => { return { x: frequencies[index], y: a }; });
     chart.data.datasets[0].data = dataset;
+    // @ts-ignore
     if (chart.options.scales && chart.options.scales.y && chart.options.scales.y.title && chart.options.scales.y.title.text) {
+    // @ts-ignore
         chart.options.scales.y.title.text = y_title;
     }
 
