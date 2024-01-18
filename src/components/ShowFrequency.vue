@@ -1,7 +1,7 @@
 <template>
     <div>Vertical scale:</div>
-    <label for="linear"><input type="radio" id="linear" value="linear" v-model="scaleType"/> Linear</label>
-    <label for="logarithmic"><input type="radio" id="logarithmic" value="logarithmic" v-model="scaleType"/> Logarithmic (dB)</label>
+    <label for="linear"><input type="radio" id="linear" value="linear" v-model="scaleType" /> Linear</label>
+    <label for="logarithmic"><input type="radio" id="logarithmic" value="logarithmic" v-model="scaleType" /> Logarithmic (dB)</label>
 
     <canvas ref="chartRef" width="700" height="450"></canvas>
 </template>
@@ -83,8 +83,8 @@ function createChartIfNeeded(): void {
                         scaleMode: 'xy',
                     },
                     limits: {
-                        x: {min: 'original', max: 'original'},
-                        y: {min: 'original', max: 'original'},
+                        x: { min: 'original', max: 'original' },
+                        y: { min: 'original', max: 'original' },
                     },
                 }
             },
@@ -119,12 +119,21 @@ function updateChart(): void {
     }
 
     let amplitudes = filterSpec.hm;
+    let y_title = 'amplitude';
     if (scaleType.value == 'logarithmic') {
         amplitudes = amplitudes.map(x => { return (x <= 0) ? -7000 : 20 * Math.log10(x); });
+        // Reduce range of y-axis to max 200 dB
+        const maxAmplitude = Math.ceil(Math.max(...amplitudes)/20) * 20;
+        const minAmplitude = maxAmplitude - 200;
+        amplitudes = amplitudes.map(x => { return (x <= minAmplitude) ? minAmplitude : x; });
+        y_title = 'amplitude (dB)';
     }
     let frequencies = filterSpec.fr;
     let dataset = amplitudes.map((a, index) => { return { x: frequencies[index], y: a }; });
     chart.data.datasets[0].data = dataset;
+    if (chart.options.scales && chart.options.scales.y && chart.options.scales.y.title && chart.options.scales.y.title.text) {
+        chart.options.scales.y.title.text = y_title;
+    }
 
     chart.update();
     chart.resetZoom();
