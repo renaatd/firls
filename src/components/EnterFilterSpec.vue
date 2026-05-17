@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit">
     <label for="freq">Sample frequency [Hz]: </label><input id="freq" type="text" inputmode="decimal" :value="frequencyText"
-        @input="onInputFrequency($event)" :class="frequencyClass"/> 
+        @input="onInputFrequency($event)" :class="frequencyClass"/>
     Nyquist frequency: {{ nyquistFrequency }} Hz<br/>
     <!--
     <label for="mode_auto"><input type="radio" id="mode_auto" value="auto" v-model="mode" /> Auto - specify
@@ -19,7 +19,7 @@
 
     <p>Table for frequencies</p>
         -->
-    <label for="taps">Number of taps: 
+    <label for="taps">Number of taps:
     <ClickHelp class="help">
       This is the number of taps of the calculated filter. The filter order is 1
       less than the number of taps. Type I filters, with an odd number of taps,
@@ -103,7 +103,7 @@ watch(frequencyBandsText, () => {
 const amplitudesText = ref('2, 2, 0, 0');
 // In the form: using :class="is-success: <a computed property>" doesn't work, but a computed property returning an object works
 const amplitudesOk = computed(() => { return splitStringToNumbers(amplitudesText.value).length > 0; });
-const amplitudesClass = computed(() => { return { 'is-success': amplitudesOk }; });
+const amplitudesClass = computed(() => { return { 'is-success': amplitudesOk.value }; });
 watch(amplitudesText, () => {
   updateCalculatedFlag(false);
 });

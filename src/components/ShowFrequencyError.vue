@@ -43,7 +43,7 @@ const PRECISION = 3;
 
 function rippleText(index: number) {
     if (filterSpec.typePerBand[index] == FilterBandType.PassBand) {
-        let ripple = 100 * (filterSpec.errorPerBand[index].maxRelError - filterSpec.errorPerBand[index].minRelError);
+        const ripple = 100 * (filterSpec.errorPerBand[index].maxRelError - filterSpec.errorPerBand[index].minRelError);
         return ripple.toFixed(2);
     }
     return "";
@@ -51,7 +51,7 @@ function rippleText(index: number) {
 
 function attenuationText(index: number) {
     if (filterSpec.typePerBand[index] == FilterBandType.StopBand) {
-        let attenuationDb = -20 * Math.log10(filterSpec.errorPerBand[index].maxError);
+        const attenuationDb = -20 * Math.log10(filterSpec.errorPerBand[index].maxError);
         return attenuationDb.toFixed(1);
     }
     return "";

@@ -24,7 +24,7 @@ function createChartIfNeeded(): void {
         return;
     }
 
-    let ctx = (chartRef.value as HTMLCanvasElement).getContext('2d');
+    const ctx = (chartRef.value as HTMLCanvasElement).getContext('2d');
     if (ctx == null) {
         addLog("Error: can't create chart, no canvas");
         return;
@@ -109,15 +109,15 @@ function updateChart(): void {
         return;
     }
 
-    let taps = filterSpec.taps;
+    const taps = filterSpec.taps;
 
-    let impulse = taps.map((a, index) => { return { x: index, y: a }; });
+    const impulse = taps.map((a, index) => { return { x: index, y: a }; });
     chart.data.datasets[0].data = impulse;
 
-    let step_input = taps.map((a, index) => { return { x: index, y: 1 }; });
+    const step_input = taps.map((a, index) => { return { x: index, y: 1 }; });
     chart.data.datasets[1].data = step_input;
 
-    let step_output: { x: number, y: number }[] = [{ x: 0, y: taps[0] }];
+    const step_output: { x: number, y: number }[] = [{ x: 0, y: taps[0] }];
     for (let i = 1; i < taps.length; i++) {
         step_output.push({ x: i, y: step_output[i - 1].y + taps[i] });
     }

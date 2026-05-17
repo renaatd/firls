@@ -31,7 +31,7 @@ function createChartIfNeeded(): void {
         return;
     }
 
-    let ctx = (chartRef.value as HTMLCanvasElement).getContext('2d');
+    const ctx = (chartRef.value as HTMLCanvasElement).getContext('2d');
     if (ctx == null) {
         addLog("Error: can't create chart, no canvas");
         return;
@@ -128,8 +128,8 @@ function updateChart(): void {
         amplitudes = amplitudes.map(x => { return (x <= minAmplitude) ? minAmplitude : x; });
         y_title = 'amplitude (dB)';
     }
-    let frequencies = filterSpec.fr;
-    let dataset = amplitudes.map((a, index) => { return { x: frequencies[index], y: a }; });
+    const frequencies = filterSpec.fr;
+    const dataset = amplitudes.map((a, index) => { return { x: frequencies[index], y: a }; });
     chart.data.datasets[0].data = dataset;
     // @ts-ignore
     if (chart.options.scales && chart.options.scales.y && chart.options.scales.y.title && chart.options.scales.y.title.text) {

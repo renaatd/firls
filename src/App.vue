@@ -11,25 +11,25 @@ import ShowStepImpulse from '@/components/ShowStepImpulse.vue'
 import ShowTaps from '@/components/ShowTaps.vue'
 import _firCalc from '@/models/FIRCalc'
 
-let firCalcInitialized = ref(false);
-let activeTab = ref(DEFAULT_TAB);
-let calculated = ref(false);
+const firCalcInitialized = ref(false);
+const activeTab = ref(DEFAULT_TAB);
+const calculated = ref(false);
 
-function setActive(newValue: number): void { 
-    activeTab.value = newValue; 
+function setActive(newValue: number): void {
+    activeTab.value = newValue;
     if (!calculated.value && activeTab.value != DEFAULT_TAB)
         activeTab.value = DEFAULT_TAB;
 }
 
-function setCalculated(newValue: boolean): void { 
-    calculated.value = newValue; 
+function setCalculated(newValue: boolean): void {
+    calculated.value = newValue;
     // Show the frequency response if there is a valid calculation
     if (calculated.value)
         setActive(0);
 }
 
 onBeforeMount(() => {
-    _firCalc.addObserverInitialized(() => { 
+    _firCalc.addObserverInitialized(() => {
         firCalcInitialized.value = true;
     });
 });
