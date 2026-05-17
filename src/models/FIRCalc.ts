@@ -66,7 +66,7 @@ class State {
     startLoad: number = Date.now();
     observersInitialized: Observer[] = [];
 
-    isInitalized() { return this.instance != null; }
+    isInitialized() { return this.instance != null; }
 
     /** Register an observer which is called when FIRModule is initialized. If FIRModule is already initialized, the observer is called immediately. */
     addObserverInitialized(observer: Observer): void {
@@ -88,12 +88,27 @@ class State {
             filterSpec.sampleFrequency = sampleFrequency;
             filterSpec.bands = [];
             for (let i = 0; i < desiredBegin.length; i++) {
+                const freqBegin = frequencyBands[2 * i];
+                const freqEnd = frequencyBands[2 * i + 1];
+                const dBegin = desiredBegin[i];
+                const dEnd = desiredEnd[i];
+                const weight = weights[i];
+
+                if (
+                  freqBegin === undefined ||
+                  freqEnd === undefined ||
+                  dBegin === undefined ||
+                  dEnd === undefined ||
+                  weight === undefined
+                ) {
+                  return [false, `Invalid band data at index ${i}`];
+                }
                 const band = new FilterBandSpec();
-                band.freqBegin = frequencyBands[2 * i];
-                band.freqEnd = frequencyBands[2 * i + 1]
-                band.desiredBegin = desiredBegin[i];
-                band.desiredEnd = desiredEnd[i];
-                band.weight = weights[i];
+                band.freqBegin = freqBegin;
+                band.freqEnd = freqEnd;
+                band.desiredBegin = dBegin;
+                band.desiredEnd = dEnd;
+                band.weight = weight;
                 filterSpec.bands.push(band);
             }
             filterSpec.taps = result as number[];

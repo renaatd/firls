@@ -153,7 +153,7 @@ function handleSubmit(): void {
   if (!allInputsOk.value)
     return;
 
-  if (!_fircalc.isInitalized()) {
+  if (!_fircalc.isInitialized()) {
     addLog('FirCalc is not initalized');
     return;
   }

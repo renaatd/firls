@@ -49,7 +49,7 @@ export class Filter {
             return FilterBandType.Undefined;
         });
 
-        const fr_hm = this.fr.map((value, index) => { return { x: value, y: this.hm[index] }; });
+        const fr_hm = this.fr.map((value, index) => { return { x: value, y: this.hm[index]! }; });
 
         this.errorPerBand = this.bands.map((value, index) => {
             const m = (value.desiredEnd - value.desiredBegin) / (value.freqEnd - value.freqBegin);
@@ -69,11 +69,11 @@ export class Filter {
             // Calculate error integral using trapezoidal rule if there are at least 2 points
             let errorIntegral = 0;
             if (errors.length >= 2) {
-                const e0 = errors[0];
-                const e1 = errors[errors.length - 1];
+                const e0 = errors[0]!;
+                const e1 = errors[errors.length - 1]!;
                 errorIntegral = 0.5 * (e0 * e0 + e1 * e1);
                 for (let i = 1; i < errors.length - 1; i++) {
-                    errorIntegral += errors[i] * errors[i];
+                    errorIntegral += errors[i]! * errors[i]!;
                 }
                 errorIntegral /= (errors.length - 1);
             }

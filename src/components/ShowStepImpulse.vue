@@ -119,7 +119,7 @@ function updateChart(): void {
 
     const step_output: { x: number, y: number }[] = [{ x: 0, y: taps[0] }];
     for (let i = 1; i < taps.length; i++) {
-        step_output.push({ x: i, y: step_output[i - 1].y + taps[i] });
+        step_output.push({ x: i, y: step_output[i - 1]!.y + taps[i]! });
     }
     chart.data.datasets[2].data = step_output;
 
