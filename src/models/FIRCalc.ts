@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import FIRModule from '@/assets/fir.js';
 import { FilterBandSpec, filterSpec, NO_POINTS } from '@/models/FilterSpec';
 import { Stopwatch } from '@/helpers/Stopwatch';
