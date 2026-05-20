@@ -15,6 +15,13 @@ import type { ChartConfiguration } from 'chart.js';
 import { filterSpec } from '@/models/FilterSpec';
 import { addLog } from '@/helpers/Logger';
 
+interface ChartScaleType {
+  title: {
+    display: boolean;
+    text: string;
+  }
+}
+
 const scaleType = ref('linear');
 
 /** chart.js Chart object, defined at first update */
@@ -129,10 +136,11 @@ function updateChart(): void {
         y_title = 'amplitude (dB)';
     }
     const frequencies = filterSpec.fr;
-    const dataset = amplitudes.map((a, index) => { return { x: frequencies[index], y: a }; });
-    chart.data.datasets[0].data = dataset;
-    if (chart.options.scales && chart.options.scales.y && chart.options.scales.y.title && chart.options.scales.y.title.text) {
-        chart.options.scales.y.title.text = y_title;
+    const dataset = amplitudes.map((a, index) => { return { x: frequencies[index]!, y: a }; });
+    chart.data.datasets[0]!.data = dataset;
+    if (chart.options.scales && chart.options.scales.y) {
+        const y_scale = chart.options.scales.y as ChartScaleType;
+        y_scale.title.text = y_title;
     }
 
     chart.update();

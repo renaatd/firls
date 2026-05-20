@@ -112,16 +112,16 @@ function updateChart(): void {
     const taps = filterSpec.taps;
 
     const impulse = taps.map((a, index) => { return { x: index, y: a }; });
-    chart.data.datasets[0].data = impulse;
+    chart.data.datasets[0]!.data = impulse;
 
     const step_input = taps.map((a, index) => { return { x: index, y: 1 }; });
-    chart.data.datasets[1].data = step_input;
+    chart.data.datasets[1]!.data = step_input;
 
-    const step_output: { x: number, y: number }[] = [{ x: 0, y: taps[0] }];
+    const step_output: { x: number, y: number }[] = [{ x: 0, y: taps[0]! }];
     for (let i = 1; i < taps.length; i++) {
         step_output.push({ x: i, y: step_output[i - 1]!.y + taps[i]! });
     }
-    chart.data.datasets[2].data = step_output;
+    chart.data.datasets[2]!.data = step_output;
 
     chart.update();
 }
