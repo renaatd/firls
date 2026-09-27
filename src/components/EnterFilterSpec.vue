@@ -29,15 +29,40 @@
     <input id="taps" type="number" inputmode="numeric" :value="tapsText"
         @input="onInputTaps($event)" :class="{ 'is-success': tapsOk }">
 
-    <label for="frequencies">List of frequency bands [Hz]: <ClickHelp class="help">List of frequency pairs specifying the edges of each frequency band. This list must be monotonically increasing, and the frequencies must be lower than the Nyquist frequency (half the sample frequency).</ClickHelp></label>
-    <input id="frequencies" type="text" inputmode="text" v-model="frequencyBandsText" :class="frequencyBandsClass"/>
-
-    <label for="amplitudes">List of amplitudes: <ClickHelp class="help">List of amplitude pairs, specifying the desired amplitude at the edges of each frequency band.</ClickHelp></label>
-    <input id="amplitudes" type="text" inputmode="text" v-model="amplitudesText" :class="amplitudesClass"/>
-
-    <label for="weights">List of weights: <ClickHelp class="help">Relative weighting factors, one per frequency band. A higher weighting factor reduces errors in that band.</ClickHelp></label>
-    <input id="weights" type="text" inputmode="text" v-model="weightsText" :class="weightsClass"/>
-
+    <label>Frequency bands: <ClickHelp class="help">Each row is one frequency band. Rows can be entered in any order; use "Sort table" to reorder them by start frequency for a clearer overview. Bands must not overlap, and frequencies must not exceed the Nyquist frequency.</ClickHelp></label>
+    <table class="striped-table bands-table">
+        <thead>
+            <tr>
+                <th class="text-center">Freq. from [Hz]</th>
+                <th class="text-center">Freq. to [Hz]</th>
+                <th class="text-center">Gain from</th>
+                <th class="text-center">Gain to</th>
+                <th class="text-center">Weight</th>
+                <th class="text-center">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(row, index) in rows" :key="index">
+                <td><input type="text" inputmode="decimal" class="cell-input text-center" :value="row.freqBegin"
+                    @input="onCellInput($event, row, 'freqBegin')" :class="cellClass(row, 'freqBegin')"/></td>
+                <td><input type="text" inputmode="decimal" class="cell-input text-center" :value="row.freqEnd"
+                    @input="onCellInput($event, row, 'freqEnd')" :class="cellClass(row, 'freqEnd')"/></td>
+                <td><input type="text" inputmode="decimal" class="cell-input text-center" :value="row.gainBegin"
+                    @input="onCellInput($event, row, 'gainBegin')" :class="{ 'is-success': isCellOk(row.gainBegin) }"/></td>
+                <td><input type="text" inputmode="decimal" class="cell-input text-center" :value="row.gainEnd"
+                    @input="onCellInput($event, row, 'gainEnd')" :class="{ 'is-success': isCellOk(row.gainEnd) }"/></td>
+                <td><input type="text" inputmode="decimal" class="cell-input text-center" :value="row.weight"
+                    @input="onCellInput($event, row, 'weight')" :class="{ 'is-success': isCellOk(row.weight) }"/></td>
+                <td class="text-center">
+                    <button type="button" class="delete-row" @click="removeRow(index)" :disabled="rows.length === 1" aria-label="Delete band" title="Delete band">🗑️</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="button" @click="addRow">+ Add band</button>
+    &nbsp;
+    <button type="button" @click="sortRows" :disabled="!rowsOk">Sort table</button>
+    &nbsp;
     <input type="submit" value="Calculate" :disabled="!allInputsOk" :class="submitClass"/>
   </form>
   Status: {{ calculatedStatus }}
@@ -75,47 +100,137 @@ watch(frequencyText, () => {
 });
 
 /* ======================================================== */
+/*
 const mode = ref('manual');
 // const isAutomatic = computed(() => { return mode.value == 'auto'; });
 
 watch(mode, () => {
   updateCalculatedFlag(false);
 });
+*/
 
 /* ======================================================== */
+/*
 const filter_type = ref('1');
 
 watch(filter_type, () => {
   updateCalculatedFlag(false);
 });
+*/
 
 /* ======================================================== */
-const frequencyBandsText = ref('0, 200, 400, 500');
-const frequencyBandsOk = computed(() => {
-  const len = splitStringToNumbers(frequencyBandsText.value).length;
-  return (len > 0) && (len % 2 == 0);
-});
-const frequencyBandsClass = computed(() => { return { 'is-success': frequencyBandsOk.value }; });
-watch(frequencyBandsText, () => {
+interface BandRow {
+  freqBegin: string;
+  freqEnd: string;
+  gainBegin: string;
+  gainEnd: string;
+  weight: string;
+}
+
+const rows = ref<BandRow[]>([
+  { freqBegin: '0', freqEnd: '200', gainBegin: '2', gainEnd: '2', weight: '1' },
+  { freqBegin: '400', freqEnd: '500', gainBegin: '0', gainEnd: '0', weight: '1' }
+]);
+
+// set before reordering rows via the Sort table button, so that reorder itself doesn't mark the result stale
+let skipNextRowsWatch = false;
+watch(rows, () => {
+  if (skipNextRowsWatch) {
+    skipNextRowsWatch = false;
+    return;
+  }
   updateCalculatedFlag(false);
+}, { deep: true });
+
+function isCellOk(value: string): boolean {
+  return isNumeric(value);
+}
+
+/** a row's own begin must not be after its own end, and its end must not exceed the Nyquist frequency (sorting other rows can't fix either) */
+function rowRangeOk(row: BandRow): boolean {
+  return isCellOk(row.freqBegin) && isCellOk(row.freqEnd)
+    && Number(row.freqBegin) <= Number(row.freqEnd)
+    && Number(row.freqEnd) <= nyquistFrequency.value;
+}
+
+const rowsOk = computed(() => {
+  return rows.value.length > 0 && rows.value.every(row =>
+    isCellOk(row.freqBegin) && isCellOk(row.freqEnd) && isCellOk(row.gainBegin) && isCellOk(row.gainEnd) && isCellOk(row.weight) && rowRangeOk(row)
+  );
 });
 
-const amplitudesText = ref('2, 2, 0, 0');
-// In the form: using :class="is-success: <a computed property>" doesn't work, but a computed property returning an object works
-const amplitudesOk = computed(() => { return splitStringToNumbers(amplitudesText.value).length > 0; });
-const amplitudesClass = computed(() => { return { 'is-success': amplitudesOk.value }; });
-watch(amplitudesText, () => {
-  updateCalculatedFlag(false);
+/** rows sorted ascending by start frequency; only meaningful once rowsOk */
+const sortedRows = computed(() => {
+  return [...rows.value].sort((a, b) => Number(a.freqBegin) - Number(b.freqBegin));
 });
 
-const weightsText = ref('1, 1');
-const weightsOk = computed(() => { return splitStringToNumbers(weightsText.value).length > 0; });
-const weightsClass = computed(() => { return { 'is-success': weightsOk.value }; });
-watch(weightsText, () => {
-  updateCalculatedFlag(false);
+const overlapOk = computed(() => {
+  if (!rowsOk.value) return false;
+  const sorted = sortedRows.value;
+  for (let i = 0; i < sorted.length - 1; i++) {
+    if (Number(sorted[i + 1]!.freqBegin) < Number(sorted[i]!.freqEnd)) {
+      return false;
+    }
+  }
+  return true;
 });
+
+const tableOk = computed(() => { return rowsOk.value && overlapOk.value; });
 
 const tapsText = ref('15');
+
+function cellClass(row: BandRow, field: 'freqBegin' | 'freqEnd') {
+  return { 'is-success': isCellOk(row[field]) && rowRangeOk(row) && overlapOk.value };
+}
+
+function onCellInput(event: Event, row: BandRow, field: keyof BandRow) {
+  const target = event.target as HTMLInputElement;
+  target.value = filterPositiveNumeric(target.value);
+  row[field] = target.value;
+}
+
+function addRow(): void {
+  rows.value.push({ freqBegin: '', freqEnd: '', gainBegin: '', gainEnd: '', weight: '' });
+}
+
+function removeRow(index: number): void {
+  if (rows.value.length === 1) return;
+  rows.value.splice(index, 1);
+}
+
+function sortRows(): void {
+  skipNextRowsWatch = true;
+  rows.value = sortedRows.value;
+}
+
+/* ======================================================== */
+/** true if FIR LS calculations are done */
+const calculated = ref(false);
+
+const allInputsOk = computed(() => {
+  return frequencyOk.value && tapsOk.value && tableOk.value;
+});
+const submitClass = computed(() => { return { 'muted-button': !allInputsOk.value }; });
+
+function handleSubmit(): void {
+  if (!allInputsOk.value)
+    return;
+
+  if (!_fircalc.isInitialized()) {
+    addLog('FirCalc is not initalized');
+    return;
+  }
+
+  const frequencies = sortedRows.value.flatMap(row => [Number(row.freqBegin), Number(row.freqEnd)]);
+  const desiredBegin = sortedRows.value.map(row => Number(row.gainBegin));
+  const desiredEnd = sortedRows.value.map(row => Number(row.gainEnd));
+  const weights = sortedRows.value.map(row => Number(row.weight));
+
+  const [success, result] = _fircalc.updateFilter(Number(tapsText.value), frequencies, desiredBegin, desiredEnd, weights, Number(frequencyText.value));
+  const message = success ? "OK" : String(result);
+  updateCalculatedFlag(success, message);
+}
+
 const tapsOk = ref(false);
 // Just for variation: here using a watcher to update the class -> must be immediate to trigger immediately at start
 watch(tapsText, () => {
@@ -134,40 +249,6 @@ function onInputTaps(event: Event) {
 }
 
 /* ======================================================== */
-/** true if FIR LS calculations are done */
-const calculated = ref(false);
-function splitStringToNumbers(textString: string): number[] {
-  const listSplit = textString.split(",");
-  if (!listSplit.every(isNumeric)) {
-    return [];
-  }
-  return listSplit.map(x => Number(x));
-}
-
-const allInputsOk = computed(() => {
-  return frequencyOk.value && tapsOk.value && frequencyBandsOk.value && amplitudesOk.value && weightsOk.value;
-});
-const submitClass = computed(() => { return { 'muted-button': !allInputsOk.value }; });
-
-function handleSubmit(): void {
-  if (!allInputsOk.value)
-    return;
-
-  if (!_fircalc.isInitialized()) {
-    addLog('FirCalc is not initalized');
-    return;
-  }
-
-  const amplitudes = splitStringToNumbers(amplitudesText.value).map(Number);
-  const desiredBegin = amplitudes.filter(function (value, index) { return index % 2 == 0 });
-  const desiredEnd = amplitudes.filter(function (value, index) { return index % 2 == 1 });
-
-  const [success, result] = _fircalc.updateFilter(Number(tapsText.value), splitStringToNumbers(frequencyBandsText.value), desiredBegin, desiredEnd, splitStringToNumbers(weightsText.value), Number(frequencyText.value));
-  const message = success ? "OK" : String(result);
-  updateCalculatedFlag(success, message);
-}
-
-/* ======================================================== */
 const calculatedStatus = ref('waiting for new calculation');
 
 /** Update calculated flag and status message, emit to parent */
@@ -181,5 +262,35 @@ function updateCalculatedFlag(newValue: boolean, newMessage = 'waiting for new c
 <style scoped>
 .help {
   font-weight: normal;
+}
+
+.bands-table {
+  table-layout: fixed;
+}
+
+.bands-table th,
+.bands-table td {
+  padding: 0.25rem 0.4rem;
+}
+
+.bands-table th:last-child,
+.bands-table td:last-child {
+  width: 2.5rem;
+}
+
+.cell-input {
+  width: 100%;
+  padding: 0.35rem;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+.delete-row {
+  line-height: 1;
+  font-size: 1.1em;
+}
+
+.delete-row:disabled {
+  opacity: 0.35;
 }
 </style>
