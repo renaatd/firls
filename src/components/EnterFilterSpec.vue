@@ -23,13 +23,13 @@
     <ClickHelp class="help">
       This is the number of taps of the calculated filter. The filter order is 1
       less than the number of taps. Type I filters, with an odd number of taps,
-      can handle any frequency respone. Type II filters, with an even number of
+      can handle any frequency response. Type II filters, with an even number of
       taps, always have zero amplitude at the Nyquist frequency.
     </ClickHelp></label>
     <input id="taps" type="number" inputmode="numeric" :value="tapsText"
         @input="onInputTaps($event)" :class="{ 'is-success': tapsOk }">
 
-    <label>Frequency bands: <ClickHelp class="help">Each row is one frequency band. Rows can be entered in any order; use "Sort table" to reorder them by start frequency for a clearer overview. Bands must not overlap, and frequencies must not exceed the Nyquist frequency.</ClickHelp></label>
+    <label>Frequency bands: <ClickHelp class="help">Each row is one frequency band. Rows can be entered in any order; use "Sort table" to reorder them by start frequency for a clearer overview. Bands must not overlap, and frequencies must not exceed the Nyquist frequency. The weight can't be zero.</ClickHelp></label>
     <table class="striped-table bands-table">
         <thead>
             <tr>
@@ -82,7 +82,7 @@ const emit = defineEmits(['setActive']);
 const frequencyText = ref('1000');
 const frequencyOk = computed(() => {
   const frequency = Number(frequencyText.value);
-  return !isNaN(frequency) && frequency > 0.0;
+  return !isNaN(frequency) && isFinite(frequency) && frequency > 0.0;
 });
 const frequencyClass = computed(() => { return { 'is-success': frequencyOk.value }; });
 const nyquistFrequency = computed(() => { return frequencyOk.value ? Number(frequencyText.value) / 2.0 : NaN; });
@@ -91,7 +91,7 @@ function onInputFrequency(event: Event) {
   const target = event.target as HTMLInputElement;
   // filter non-numerical characters
   target.value = filterPositiveNumeric(target.value);
-  // and assign it to frequencyText for updating frquency
+  // and assign it to frequencyText for updating frequency
   frequencyText.value = target.value
 }
 
@@ -149,13 +149,16 @@ function isCellOk(value: string): boolean {
 /** a row's own begin must not be after its own end, and its end must not exceed the Nyquist frequency (sorting other rows can't fix either) */
 function rowRangeOk(row: BandRow): boolean {
   return isCellOk(row.freqBegin) && isCellOk(row.freqEnd)
-    && Number(row.freqBegin) <= Number(row.freqEnd)
+    && Number(row.freqBegin) < Number(row.freqEnd)
     && Number(row.freqEnd) <= nyquistFrequency.value;
 }
 
 const rowsOk = computed(() => {
   return rows.value.length > 0 && rows.value.every(row =>
-    isCellOk(row.freqBegin) && isCellOk(row.freqEnd) && isCellOk(row.gainBegin) && isCellOk(row.gainEnd) && isCellOk(row.weight) && rowRangeOk(row)
+    isCellOk(row.freqBegin) && isCellOk(row.freqEnd)
+    && isCellOk(row.gainBegin) && isCellOk(row.gainEnd)
+    && isCellOk(row.weight) && rowRangeOk(row)
+    && Number(row.weight) > 0
   );
 });
 
@@ -204,9 +207,6 @@ function sortRows(): void {
 }
 
 /* ======================================================== */
-/** true if FIR LS calculations are done */
-const calculated = ref(false);
-
 const allInputsOk = computed(() => {
   return frequencyOk.value && tapsOk.value && tableOk.value;
 });
@@ -217,7 +217,7 @@ function handleSubmit(): void {
     return;
 
   if (!_fircalc.isInitialized()) {
-    addLog('FirCalc is not initalized');
+    addLog('FirCalc is not initialized');
     return;
   }
 
@@ -234,8 +234,8 @@ function handleSubmit(): void {
 const tapsOk = ref(false);
 // Just for variation: here using a watcher to update the class -> must be immediate to trigger immediately at start
 watch(tapsText, () => {
-  const order = Number(tapsText.value);
-  tapsOk.value = !isNaN(order) && order >= 0;
+  const filterTaps = Number(tapsText.value);
+  tapsOk.value = !isNaN(filterTaps) && filterTaps > 0;
 }, { 'immediate': true })
 
 watch(tapsText, () => {
@@ -251,10 +251,9 @@ function onInputTaps(event: Event) {
 /* ======================================================== */
 const calculatedStatus = ref('waiting for new calculation');
 
-/** Update calculated flag and status message, emit to parent */
+/** Update status message, emit calculated to parent */
 function updateCalculatedFlag(newValue: boolean, newMessage = 'waiting for new calculation'): void {
   calculatedStatus.value = newMessage;
-  calculated.value = newValue;
   emit('setActive', newValue);
 }
 </script>
