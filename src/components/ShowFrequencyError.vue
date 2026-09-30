@@ -29,9 +29,9 @@
     </table>
     <p>
         <ClickHelp>Table and graph use the frequency response calculated in {{ NO_POINTS }} points, evenly divided from DC
-            till Nyquist frequency. <p>Max error and Min error are respectively the maximum and minimum value of the error Em =
+            till Nyquist frequency. <span class="block">Max error and Min error are respectively the maximum and minimum value of the error Em =
             Hm - |Dm|, with Hm = actual magnitude and Dm = desired magnitude. The error integral is 1/f<sub>Nyquist</sub> x
-            &int;Em<sup>2</sup>df. The weighted error integral is the error integral multiplied with the weight.</p></ClickHelp>
+            &int;Em<sup>2</sup>df. The weighted error integral is the error integral multiplied with the weight.</span></ClickHelp>
     </p>
 </template>
 
@@ -51,10 +51,21 @@ function rippleText(index: number) {
 
 function attenuationText(index: number) {
     if (filterSpec.typePerBand[index] == FilterBandType.StopBand) {
-        const attenuationDb = -20 * Math.log10(filterSpec.errorPerBand[index]!.maxError);
+        const maxError = filterSpec.errorPerBand[index]!.maxError;
+        // A stop band with zero error at all points has an infinite attenuation
+        if (maxError <= 0)
+            return "∞";
+        const attenuationDb = -20 * Math.log10(maxError);
         return attenuationDb.toFixed(1);
     }
     return "";
 }
 
 </script>
+
+<style scoped>
+/* ClickHelp help text is a span, start the second paragraph of the help on a new line */
+.block {
+    display: block;
+}
+</style>

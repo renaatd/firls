@@ -55,6 +55,20 @@ export class Filter {
             const m = (value.desiredEnd - value.desiredBegin) / (value.freqEnd - value.freqBegin);
             const c = value.desiredBegin - value.freqBegin * m;
             const fr_hm_filtered = fr_hm.filter(item => (item.x >= value.freqBegin && item.x <= value.freqEnd));
+
+            // A band without any points of the frequency response has no error values, don't
+            // evaluate Math.max/Math.min on an empty array (would give -Infinity/Infinity).
+            if (fr_hm_filtered.length == 0) {
+                return {
+                    noPoints: 0,
+                    maxError: 0,
+                    minError: 0,
+                    errorIntegral: 0,
+                    maxRelError: 0,
+                    minRelError: 0
+                };
+            }
+
             const errors = fr_hm_filtered.map(item => item.y - Math.abs(c + m * item.x));
 
             // only for pass bands: calculate relative error (= ripple)
