@@ -17,11 +17,10 @@
                 <td class="text-right">{{ item.freqBegin }}</td>
                 <td class="text-right">{{ item.freqEnd }}</td>
                 <td class="text-right">{{ filterSpec.errorPerBand[index]!.noPoints }}</td>
-                <td class="text-right">{{ filterSpec.errorPerBand[index]!.maxError.toPrecision(PRECISION) }}</td>
-                <td class="text-right">{{ filterSpec.errorPerBand[index]!.minError.toPrecision(PRECISION) }}</td>
-                <td class="text-right">{{ filterSpec.errorPerBand[index]!.errorIntegral.toPrecision(PRECISION) }}</td>
-                <td class="text-right">{{ (item.weight *
-                    filterSpec.errorPerBand[index]!.errorIntegral).toPrecision(PRECISION) }}</td>
+                <td class="text-right">{{ errorText(index, filterSpec.errorPerBand[index]!.maxError) }}</td>
+                <td class="text-right">{{ errorText(index, filterSpec.errorPerBand[index]!.minError) }}</td>
+                <td class="text-right">{{ errorText(index, filterSpec.errorPerBand[index]!.errorIntegral) }}</td>
+                <td class="text-right">{{ weightedErrorText(index, item.weight) }}</td>
                 <td class="text-right">{{ rippleText(index) }}</td>
                 <td class="text-right">{{ attenuationText(index) }}</td>
             </tr>
@@ -41,16 +40,35 @@ import ClickHelp from './ClickHelp.vue';
 
 const PRECISION = 3;
 
+function hasPoints(index: number) {
+    return filterSpec.errorPerBand[index]!.noPoints > 0;
+}
+
+function errorText(index: number, error: number) {
+    return hasPoints(index) ? error.toPrecision(PRECISION) : "N/A";
+}
+
+function weightedErrorText(index: number, weight: number) {
+    return hasPoints(index)
+        ? (weight * filterSpec.errorPerBand[index]!.errorIntegral).toPrecision(PRECISION)
+        : "N/A";
+}
+
 function rippleText(index: number) {
-    if (filterSpec.typePerBand[index] == FilterBandType.PassBand) {
+    if (filterSpec.typePerBand[index] == FilterBandType.PassBand && hasPoints(index)) {
         const ripple = 100 * (filterSpec.errorPerBand[index]!.maxRelError - filterSpec.errorPerBand[index]!.minRelError);
         return ripple.toFixed(2);
+    }
+    if (filterSpec.typePerBand[index] == FilterBandType.PassBand) {
+        return "N/A";
     }
     return "";
 }
 
 function attenuationText(index: number) {
     if (filterSpec.typePerBand[index] == FilterBandType.StopBand) {
+        if (!hasPoints(index))
+            return "N/A";
         const maxError = filterSpec.errorPerBand[index]!.maxError;
         // A stop band with zero error at all points has an infinite attenuation
         if (maxError <= 0)
