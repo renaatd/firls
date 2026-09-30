@@ -10,7 +10,7 @@
 #define FIR_TWO_PI 6.28318530717958647692
 #endif
 
-#define SIGNAL_LENGTH 32
+#define SIGNAL_LENGTH (N_TAPS + 20)
 
 /**
  * Filters a sine burst with the filter defined in filter_definition.h and prints the output samples.
