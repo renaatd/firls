@@ -45,6 +45,12 @@ npm run dev
 npm run build
 ```
 
+### Preview build version
+
+```sh
+npm run preview
+```
+
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh
