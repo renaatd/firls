@@ -231,23 +231,6 @@ function handleSubmit(): void {
   updateCalculatedFlag(success, message);
 }
 
-const tapsOk = ref(false);
-// Just for variation: here using a watcher to update the class -> must be immediate to trigger immediately at start
-watch(tapsText, () => {
-  const filterTaps = Number(tapsText.value);
-  tapsOk.value = !isNaN(filterTaps) && filterTaps > 0;
-}, { 'immediate': true })
-
-watch(tapsText, () => {
-  updateCalculatedFlag(false);
-});
-
-function onInputTaps(event: Event) {
-  const target = event.target as HTMLInputElement;
-  target.value = filterPositiveInteger(target.value);
-  tapsText.value = target.value
-}
-
 /* ======================================================== */
 const calculatedStatus = ref('waiting for new calculation');
 
@@ -256,6 +239,23 @@ function updateCalculatedFlag(newValue: boolean, newMessage = 'waiting for new c
   calculatedStatus.value = newMessage;
   emit('setActive', newValue);
 }
+
+const tapsOk = ref(false);
+// Just for variation: here using a watcher to update the class -> must be immediate to trigger immediately at start
+watch(tapsText, () => {
+  const filterTaps = Number(tapsText.value);
+  tapsOk.value = !isNaN(filterTaps) && filterTaps > 0;
+
+  updateCalculatedFlag(false);
+}, { 'immediate': true })
+
+function onInputTaps(event: Event) {
+  const target = event.target as HTMLInputElement;
+  target.value = filterPositiveInteger(target.value);
+  tapsText.value = target.value
+}
+
+/* ======================================================== */
 </script>
 
 <style scoped>

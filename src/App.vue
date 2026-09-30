@@ -48,15 +48,15 @@ onBeforeMount(() => {
       <p>If this message doesn't disappear, your browser is not able to run this application. Try again with a different browser.</p>
     </div>
 
-    <a class="button" :class="{'muted-button': !calculated, 'round-button': activeTab==0}" @click.prevent="setActive(0)">Frequency response</a>&nbsp;
-    <a class="button" :class="{'muted-button': !calculated, 'round-button': activeTab==1}"  @click.prevent="setActive(1)">Time response</a>&nbsp;
-    <a class="button" :class="{'muted-button': !calculated, 'round-button': activeTab==2}"  @click.prevent="setActive(2)">Filter coefficients</a>&nbsp;
-    <a class="button" :class="{'round-button': activeTab==3}"  @click.prevent="setActive(3)">Log messages</a>&nbsp;
+    <button type="button" class="button" :class="{'muted-button': !calculated, 'round-button': activeTab==0}" :aria-pressed="activeTab==0" @click="setActive(0)">Frequency response</button>&nbsp;
+    <button type="button" class="button" :class="{'muted-button': !calculated, 'round-button': activeTab==1}" :aria-pressed="activeTab==1" @click="setActive(1)">Filter coefficients</button>&nbsp;
+    <button type="button" class="button" :class="{'muted-button': !calculated, 'round-button': activeTab==2}" :aria-pressed="activeTab==2" @click="setActive(2)">Time response</button>&nbsp;
+    <button type="button" class="button" :class="{'round-button': activeTab==3}" :aria-pressed="activeTab==3" @click="setActive(3)">Log messages</button>&nbsp;
 
     <ShowFrequencyError v-if="activeTab == 0"/>
     <ShowFrequency v-if="activeTab == 0"/>
-    <ShowStepImpulse v-if="activeTab == 1"/>
-    <ShowTaps v-if="activeTab == 2"/>
+    <ShowTaps v-if="activeTab == 1"/>
+    <ShowStepImpulse v-if="activeTab == 2"/>
     <ShowLog v-if="activeTab == 3"/>
   </div>
 </template>

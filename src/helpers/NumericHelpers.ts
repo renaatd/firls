@@ -11,8 +11,8 @@ export function isNumeric(s: string | number): boolean {
     } else {
         return false;
     }
-    const n = Number(s); 
-    return !isNaN(n) && isFinite(n); 
+    const n = Number(s);
+    return !isNaN(n) && isFinite(n);
 }
 
 /** Filter everything except digits from a string */
@@ -30,7 +30,7 @@ export function filterPositiveNumeric(value: string): string {
 /** Filter everything except - . and digit from a string. Filter also a second . and all following characters or incorrectly placed - */
 export function filterNumeric(value: string): string {
     // https://stackoverflow.com/a/32320458
-    // scientific notation or negative numbers can't be entered
+    // scientific notation can't be entered
 
     // filter non-numerical characters (everything except - . 0123456789)
     // filter a - preceded by other characters and everything after it
