@@ -58,8 +58,8 @@ import Prism from 'prismjs';
 import 'prismjs/components/prism-c';
 import 'prismjs/themes/prism.min.css';
 
-import symfirHeader from '../../public/symfir.h?raw';
-import filterDemoSource from '../../public/filter_output_demo.c?raw';
+import symfirHeader from '../assets/symfir.h?raw';
+import filterDemoSource from '../assets/filter_output_demo.c?raw';
 
 /** selected output mode: all taps, only half the taps, or C-style output */
 const outputMode = ref<'all' | 'half' | 'c'>('all');
